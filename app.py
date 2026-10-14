@@ -95,6 +95,10 @@ def fmt_num(x, decimals=2):
     if x is None or pd.isna(x): return '—'
     return (f'{x:,.{decimals}f}').replace(',', 'X').replace('.', ',').replace('X', '.')
 
+def fmt_pct(x, decimals=4):
+    """Formato de precisión para porcentajes de error, sin alterar los cálculos."""
+    return fmt_num(x, decimals)
+
 def prep_model(df, model, last_hist_date):
     d = df.copy()
     d['PERIODO'] = numeric(d['PERIODO']) if 'PERIODO' in d else np.nan
@@ -329,7 +333,7 @@ elif section == 'Comparación de modelos':
         overall_winner = global_score.iloc[0]
         runner_up = global_score.iloc[1] if len(global_score)>1 else None
         margin = (runner_up['MAPE promedio (%)'] - overall_winner['MAPE promedio (%)']) if runner_up is not None else np.nan
-        st.markdown(f'''<div class="winner"><div style="font-size:.74rem;color:{TEAL};font-weight:800;letter-spacing:.1em">RESULTADO GLOBAL · VALIDACIÓN RETROSPECTIVA</div><div style="font-size:1.7rem;font-weight:850;color:{NAVY};margin:6px 0">Modelo {overall_winner['Modelo'].lower()} recomendado por MAPE promedio</div><div style="color:{INK};line-height:1.65">MAPE promedio: <b>{fmt_num(overall_winner['MAPE promedio (%)'])}%</b> · MAE promedio: <b>{fmt_soles(overall_winner['MAE promedio (S/)'])}</b> · RMSE promedio: <b>{fmt_soles(overall_winner['RMSE promedio (S/)'])}</b><br>Se evaluaron {int(overall_winner['Horizontes evaluados'])} horizontes. {('La diferencia frente al otro modelo es de '+fmt_num(margin)+' puntos porcentuales de MAPE promedio.') if pd.notna(margin) else ''}</div></div>''',unsafe_allow_html=True)
+        st.markdown(f'''<div class="winner"><div style="font-size:.74rem;color:{TEAL};font-weight:800;letter-spacing:.1em">RESULTADO GLOBAL · VALIDACIÓN RETROSPECTIVA</div><div style="font-size:1.7rem;font-weight:850;color:{NAVY};margin:6px 0">Modelo {overall_winner['Modelo'].lower()} recomendado por MAPE promedio</div><div style="color:{INK};line-height:1.65">MAPE promedio: <b>{fmt_pct(overall_winner['MAPE promedio (%)'])}%</b> · MAE promedio: <b>{fmt_soles(overall_winner['MAE promedio (S/)'])}</b> · RMSE promedio: <b>{fmt_soles(overall_winner['RMSE promedio (S/)'])}</b><br>Se evaluaron {int(overall_winner['Horizontes evaluados'])} horizontes. {('La diferencia frente al otro modelo es de '+fmt_pct(margin)+' puntos porcentuales de MAPE promedio.') if pd.notna(margin) else ''}</div></div>''',unsafe_allow_html=True)
         st.caption('Criterio de selección global: menor MAPE promedio con el mismo peso para cada horizonte disponible. No implica que el modelo gane en todos los horizontes; revisa los resultados individuales antes de elegir según el uso del pronóstico.')
     if not fa.empty and not fm.empty:
         comp=fa[['Fecha','Pronostico_Soles']].rename(columns={'Pronostico_Soles':'Aditivo'}).merge(fm[['Fecha','Pronostico_Soles']].rename(columns={'Pronostico_Soles':'Multiplicativo'}),on='Fecha',how='inner').sort_values('Fecha')
@@ -354,9 +358,9 @@ elif section == 'Comparación de modelos':
             with tab:
                 subset=all_metrics[all_metrics['Horizonte (meses)']==h].sort_values('MAPE (%)')
                 best=subset.iloc[0]
-                st.markdown(f'<div class="winner"><b>Ganador para {h} meses: modelo {best["Modelo"].lower()}</b><br><span class="small-note">Se selecciona por el menor MAPE en este horizonte. MAPE {fmt_num(best["MAPE (%)"])}% · MAE {fmt_soles(best["MAE (S/)"])} · RMSE {fmt_soles(best["RMSE (S/)"])}</span></div>',unsafe_allow_html=True)
+                st.markdown(f'<div class="winner"><b>Ganador para {h} meses: modelo {best["Modelo"].lower()}</b><br><span class="small-note">Se selecciona por el menor MAPE en este horizonte. MAPE {fmt_pct(best["MAPE (%)"])}% · MAE {fmt_soles(best["MAE (S/)"])} · RMSE {fmt_soles(best["RMSE (S/)"])}</span></div>',unsafe_allow_html=True)
                 show=subset.copy()
-                show['MAE (S/)']=show['MAE (S/)'].map(fmt_soles); show['RMSE (S/)']=show['RMSE (S/)'].map(fmt_soles); show['MAPE (%)']=show['MAPE (%)'].map(lambda x:f'{fmt_num(x)}%')
+                show['MAE (S/)']=show['MAE (S/)'].map(fmt_soles); show['RMSE (S/)']=show['RMSE (S/)'].map(fmt_soles); show['MAPE (%)']=show['MAPE (%)'].map(lambda x:f'{fmt_pct(x)}%')
                 st.dataframe(show[['Modelo','MAE (S/)','RMSE (S/)','MAPE (%)']],use_container_width=True,hide_index=True)
                 test=validation_tests[h]
                 hfig=go.Figure(); hfig.add_trace(go.Scatter(x=test['Fecha'],y=test['Real_Soles'],name='Real observado',line=dict(color=NAVY,width=2.8)))
