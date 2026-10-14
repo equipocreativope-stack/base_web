@@ -8,11 +8,11 @@ import plotly.graph_objects as go
 st.set_page_config(page_title='BCP Analytics | Inteligencia financiera', page_icon='📊', layout='wide', initial_sidebar_state='expanded')
 
 # Paleta corporativa y contraste explícito para evitar texto blanco en tema oscuro.
-NAVY = '#0B2340'
-BLUE = '#1769AA'
-CYAN = '#2FA8D8'
-TEAL = '#159A91'
-GOLD = '#E4AD47'
+NAVY = '#002D72'  # Inspiración visual bancaria; no es una web oficial del BCP
+BLUE = '#0057B8'
+CYAN = '#38BDF8'
+TEAL = '#0F766E'
+GOLD = '#F5B335'
 INK = '#172B4D'
 MUTED = '#63758B'
 FACTOR_SOLES = 1000  # Los datos del archivo SBS están expresados en miles de soles.
@@ -32,7 +32,7 @@ h1,h2,h3,h4,h5,h6,[data-testid="stSubheader"] {{ color:{NAVY} !important; }}
 [data-testid="stDataFrame"], [data-testid="stTable"] {{ background:white !important; }}
 input, textarea, [data-baseweb="select"] > div {{ background-color:#FFFFFF !important; color:{INK} !important; }}
 [data-testid="stWidgetLabel"] p {{ color:{INK} !important; }}
-.hero {{ position:relative; overflow:hidden; background:linear-gradient(115deg,#071A30 0%,#123E68 52%,#1769AA 100%); color:white !important; padding:26px 29px; border-radius:21px; margin-bottom:14px; box-shadow:0 14px 35px rgba(11,35,64,.15); }}
+.hero {{ position:relative; overflow:hidden; background:linear-gradient(115deg,#002D72 0%,#0057B8 58%,#1675C9 100%); color:white !important; padding:26px 29px; border-radius:21px; margin-bottom:14px; box-shadow:0 14px 35px rgba(11,35,64,.15); }}
 .hero:after {{ content:""; position:absolute; width:320px;height:320px;right:-65px;top:-170px;border:1px solid rgba(255,255,255,.2);border-radius:50%;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025); animation:orbit 24s linear infinite; pointer-events:none; }}
 .hero h1 {{ font-size:2.1rem; letter-spacing:-.04em; margin:0 0 6px; color:#FFFFFF !important; }}
 .hero p {{ color:#E2EDF8 !important; margin:0; max-width:900px; }}
@@ -184,7 +184,7 @@ except Exception as e:
 fa = ad[ad['Es_pronostico'] & ad['Pronostico_Soles'].notna()].copy()
 fm = mu[mu['Es_pronostico'] & mu['Pronostico_Soles'].notna()].copy()
 
-st.sidebar.markdown(f'<div style="background:linear-gradient(145deg,{NAVY},{BLUE});padding:17px;border-radius:15px;color:#FFFFFF !important;margin-bottom:12px"><div style="font-size:.72rem;letter-spacing:.14em;color:#9DDBF1 !important;font-weight:750">INTELIGENCIA FINANCIERA</div><div style="font-size:1.45rem;font-weight:800;color:#FFFFFF !important">BCP Analytics</div><div style="font-size:.83rem;color:#D6E9F7 !important">Series de tiempo · SBS</div></div>', unsafe_allow_html=True)
+st.sidebar.markdown(f'<div style="background:linear-gradient(145deg,#002D72,#0057B8);padding:17px;border-radius:15px;color:#FFFFFF !important;margin-bottom:12px"><div style="font-size:.72rem;letter-spacing:.14em;color:#9DDBF1 !important;font-weight:750">INTELIGENCIA FINANCIERA</div><div style="font-size:1.45rem;font-weight:800;color:#FFFFFF !important">BCP Analytics</div><div style="font-size:.83rem;color:#D6E9F7 !important">Series de tiempo · SBS</div></div>', unsafe_allow_html=True)
 st.sidebar.caption('Base conectada al archivo del repositorio · presentación en soles')
 st.sidebar.markdown('### Filtros')
 variable = st.sidebar.selectbox('Variable histórica', VARIABLES, index=0)
@@ -196,7 +196,7 @@ hist = base[(base['Fecha'].dt.date >= start_date) & (base['Fecha'].dt.date <= en
 sections=['Resumen ejecutivo','Evolución histórica','Modelo aditivo','Modelo multiplicativo','Comparación de modelos','Contexto de fluctuaciones','Datos y metodología']
 section=st.sidebar.radio('Navegación',sections)
 
-st.markdown(f'''<div class="hero"><div class="eyebrow">Panel de análisis bancario · Perú</div><h1>BCP Analytics</h1><p>Inteligencia financiera para evaluar tendencias, proyecciones y riesgos de interpretación de la cartera de créditos.</p><span class="pill">SOLES PERUANOS (S/) · HISTÓRICO {first_date:%Y}–{last_date:%Y} · PROYECCIÓN ORIGINAL 2026–2028</span></div>''',unsafe_allow_html=True)
+st.markdown(f'''<div class="hero"><div class="eyebrow">Panel académico de análisis bancario · Perú</div><h1>BCP Analytics</h1><p>Dashboard académico inspirado en una estética bancaria azul. Análisis de tendencias, proyecciones y riesgos de interpretación de la cartera de créditos.</p><span class="pill">SOLES PERUANOS (S/) · HISTÓRICO {first_date:%Y}–{last_date:%Y} · PROYECCIÓN ORIGINAL 2026–2028</span></div>''',unsafe_allow_html=True)
 st.caption(f'Fuente: libro consolidado del repositorio · {len(base):,} observaciones mensuales · unidad de origen: miles de soles; conversión de visualización a soles.')
 
 # Backtests por horizontes. El modelo se vuelve a estimar en cada horizonte sin modificar el Excel.
@@ -307,8 +307,17 @@ elif section in ('Modelo aditivo','Modelo multiplicativo'):
         st.caption('Las cifras se muestran en S/. Los datos y cálculos almacenados en el Excel no se modifican.')
 
 elif section == 'Comparación de modelos':
-    st.markdown('<div class="section-title">Comparación de modelos</div>',unsafe_allow_html=True)
-    st.markdown('<div class="subtle">Dos preguntas separadas: ¿qué trayectoria proyecta cada modelo? y ¿cuál se comportó mejor al pronosticar datos que no había visto?</div>',unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Comparación y selección del modelo</div>',unsafe_allow_html=True)
+    st.markdown('<div class="subtle">Evaluación académica para apoyar la decisión: se prioriza el error porcentual medio (MAPE) y se contrasta con MAE y RMSE en los horizontes de 12, 24 y 36 meses.</div>',unsafe_allow_html=True)
+    if not all_metrics.empty:
+        # Regla transparente: ganador global = menor MAPE promedio entre los horizontes disponibles.
+        global_score = all_metrics.groupby('Modelo', as_index=False).agg(**{'MAPE promedio (%)':('MAPE (%)','mean'),'MAE promedio (S/)':('MAE (S/)','mean'),'RMSE promedio (S/)':('RMSE (S/)','mean'),'Horizontes evaluados':('Horizonte (meses)','nunique')})
+        global_score = global_score.sort_values('MAPE promedio (%)').reset_index(drop=True)
+        overall_winner = global_score.iloc[0]
+        runner_up = global_score.iloc[1] if len(global_score)>1 else None
+        margin = (runner_up['MAPE promedio (%)'] - overall_winner['MAPE promedio (%)']) if runner_up is not None else np.nan
+        st.markdown(f'''<div class="winner"><div style="font-size:.74rem;color:{TEAL};font-weight:800;letter-spacing:.1em">RESULTADO GLOBAL · VALIDACIÓN RETROSPECTIVA</div><div style="font-size:1.7rem;font-weight:850;color:{NAVY};margin:6px 0">Modelo {overall_winner['Modelo'].lower()} recomendado por MAPE promedio</div><div style="color:{INK};line-height:1.65">MAPE promedio: <b>{fmt_num(overall_winner['MAPE promedio (%)'])}%</b> · MAE promedio: <b>{fmt_soles(overall_winner['MAE promedio (S/)'])}</b> · RMSE promedio: <b>{fmt_soles(overall_winner['RMSE promedio (S/)'])}</b><br>Se evaluaron {int(overall_winner['Horizontes evaluados'])} horizontes. {('La diferencia frente al otro modelo es de '+fmt_num(margin)+' puntos porcentuales de MAPE promedio.') if pd.notna(margin) else ''}</div></div>''',unsafe_allow_html=True)
+        st.caption('Criterio de selección global: menor MAPE promedio con el mismo peso para cada horizonte disponible. No implica que el modelo gane en todos los horizontes; revisa los resultados individuales antes de elegir según el uso del pronóstico.')
     if not fa.empty and not fm.empty:
         comp=fa[['Fecha','Pronostico_Soles']].rename(columns={'Pronostico_Soles':'Aditivo'}).merge(fm[['Fecha','Pronostico_Soles']].rename(columns={'Pronostico_Soles':'Multiplicativo'}),on='Fecha',how='inner').sort_values('Fecha')
         fig=go.Figure(); fig.add_trace(go.Scatter(x=comp['Fecha'],y=comp['Aditivo'],name='Aditivo',line=dict(color=BLUE,width=3.2),mode='lines'))
@@ -332,7 +341,7 @@ elif section == 'Comparación de modelos':
             with tab:
                 subset=all_metrics[all_metrics['Horizonte (meses)']==h].sort_values('MAPE (%)')
                 best=subset.iloc[0]
-                st.markdown(f'<div class="winner"><b>Menor MAPE en esta prueba: modelo {best["Modelo"].lower()}</b><br><span class="small-note">MAPE {fmt_num(best["MAPE (%)"])}% · MAE {fmt_soles(best["MAE (S/)"])} · RMSE {fmt_soles(best["RMSE (S/)"])}</span></div>',unsafe_allow_html=True)
+                st.markdown(f'<div class="winner"><b>Ganador para {h} meses: modelo {best["Modelo"].lower()}</b><br><span class="small-note">Se selecciona por el menor MAPE en este horizonte. MAPE {fmt_num(best["MAPE (%)"])}% · MAE {fmt_soles(best["MAE (S/)"])} · RMSE {fmt_soles(best["RMSE (S/)"])}</span></div>',unsafe_allow_html=True)
                 show=subset.copy()
                 show['MAE (S/)']=show['MAE (S/)'].map(fmt_soles); show['RMSE (S/)']=show['RMSE (S/)'].map(fmt_soles); show['MAPE (%)']=show['MAPE (%)'].map(lambda x:f'{fmt_num(x)}%')
                 st.dataframe(show[['Modelo','MAE (S/)','RMSE (S/)','MAPE (%)']],use_container_width=True,hide_index=True)
@@ -377,4 +386,4 @@ else:
         st.dataframe(display,use_container_width=True,hide_index=True)
 
 st.markdown('---')
-st.markdown(f'<div class="small-note">BCP Analytics · Análisis de series de tiempo para discusión ejecutiva · Datos históricos: SBS · Acontecimientos: fuentes enlazadas. Los pronósticos son estimaciones y no constituyen garantías de resultados.</div>',unsafe_allow_html=True)
+st.markdown(f'<div class="small-note">BCP Analytics · Proyecto académico independiente; no es un producto oficial del BCP · Análisis de series de tiempo · Datos históricos: SBS · Acontecimientos: fuentes enlazadas. Los pronósticos son estimaciones y no constituyen garantías de resultados.</div>',unsafe_allow_html=True)

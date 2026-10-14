@@ -1,34 +1,25 @@
-# BCP Analytics
+# BCP Analytics · Académico
 
-Dashboard ejecutivo de series de tiempo para créditos directos del BCP, con análisis histórico de créditos, depósitos y patrimonio; pronósticos originales aditivo y multiplicativo; y validación retrospectiva por horizontes de 12, 24 y 36 meses.
+Dashboard académico independiente de series de tiempo para créditos directos del BCP, con datos históricos de créditos, depósitos y patrimonio.
 
-## Datos
-
-La aplicación lee automáticamente `Base_BCP_Consolidada.xlsx` desde la misma carpeta que `app.py`. No solicita al visitante cargar el Excel. Mantén el archivo en la raíz del repositorio junto a `app.py`.
-
-El libro debe incluir las hojas `BASE_BCP`, `ADITIVO` y `MULTIPLICATIVO`. Los datos originales se encuentran expresados en miles de soles; la interfaz convierte la visualización a soles multiplicando por 1.000, sin editar el archivo fuente.
+## Funciones
+- Base `Base_BCP_Consolidada.xlsx` cargada automáticamente desde la misma carpeta que `app.py`.
+- Hojas requeridas: `BASE_BCP`, `ADITIVO` y `MULTIPLICATIVO`.
+- Pronósticos originales de las hojas ADITIVO y MULTIPLICATIVO presentados por separado.
+- Comparación de pronósticos originales y validación retrospectiva en horizontes de 12, 24 y 36 meses.
+- Selección de ganador por horizonte y ganador global por menor MAPE promedio entre horizontes, con MAE y RMSE como medidas complementarias.
+- Valores mostrados en soles (S/); el libro original está en miles de soles y se multiplica por 1.000 únicamente en la visualización.
+- Tema claro azul y blanco, con acentos dorados y textos de alto contraste.
+- Cronología contextual de eventos, sin atribuir causalidad sin análisis estadístico.
 
 ## Ejecutar localmente
-
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Publicar con GitHub y Streamlit Community Cloud
+## Despliegue
+Sube `app.py`, `requirements.txt`, `README.md`, `.streamlit/config.toml` y `Base_BCP_Consolidada.xlsx` a la raíz del repositorio (la carpeta `.streamlit` debe contener `config.toml`). Configura Streamlit Community Cloud para ejecutar `app.py`.
 
-1. Sube `app.py`, `requirements.txt`, `README.md`, `.streamlit/config.toml` y `Base_BCP_Consolidada.xlsx` al mismo repositorio.
-2. Conecta el repositorio en Streamlit Community Cloud y selecciona `app.py` como archivo principal.
-3. Cuando actualices el código o el Excel en GitHub, el servicio desplegará los cambios.
-
-## Secciones
-
-- Resumen ejecutivo
-- Evolución histórica
-- Modelo aditivo (pronóstico original)
-- Modelo multiplicativo (pronóstico original)
-- Comparación de modelos y backtesting a 12, 24 y 36 meses
-- Contexto de fluctuaciones
-- Datos y metodología
-
-Los backtests son complementarios y no reemplazan las proyecciones originales del Excel. La cronología de acontecimientos no demuestra causalidad.
+## Nota académica
+Este proyecto es independiente y no es una web ni una herramienta oficial del Banco de Crédito del Perú. Los resultados retrospectivos son evidencia comparativa, no garantía de precisión futura. El ganador global usa el menor MAPE promedio con el mismo peso para cada horizonte disponible; las métricas individuales y la estabilidad también deben considerarse.
