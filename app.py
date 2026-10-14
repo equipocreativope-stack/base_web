@@ -8,42 +8,50 @@ import plotly.graph_objects as go
 st.set_page_config(page_title='BCP Analytics | Inteligencia financiera', page_icon='📊', layout='wide', initial_sidebar_state='expanded')
 
 # Paleta corporativa y contraste explícito para evitar texto blanco en tema oscuro.
-NAVY = '#002D72'  # Inspiración visual bancaria; no es una web oficial del BCP
-BLUE = '#0057B8'
-CYAN = '#38BDF8'
-TEAL = '#0F766E'
-GOLD = '#F5B335'
-INK = '#172B4D'
-MUTED = '#63758B'
+NAVY = '#EAF2FF'  # Paleta académica inspirada en tonos bancarios; no es una web oficial del BCP
+BLUE = '#69AFFF'
+CYAN = '#62D9F5'
+TEAL = '#55D6BE'
+GOLD = '#FFD166'
+INK = '#E5EDF7'
+MUTED = '#A9BAD0'
+BG = '#071426'
+PANEL = '#10223A'
+PANEL_ALT = '#152B47'
+BORDER = '#29415F'
 FACTOR_SOLES = 1000  # Los datos del archivo SBS están expresados en miles de soles.
 DEFAULT_FILE = Path(__file__).parent / 'Base_BCP_Consolidada.xlsx'
 VARIABLES = ['Créditos directos', 'Depósitos totales', 'Patrimonio']
 
 st.markdown(f'''<style>
-:root {{ color-scheme: light; }}
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{ background:#F4F7FB !important; color:{INK} !important; }}
-[data-testid="stHeader"] {{ background:rgba(244,247,251,.96) !important; }}
-[data-testid="stSidebar"], [data-testid="stSidebar"] > div {{ background:#EAF0F7 !important; color:{INK} !important; }}
-.stMarkdown, .stMarkdown p, .stMarkdown li, .stMarkdown label, label, p, li, span {{ color:inherit; }}
+:root {{ color-scheme: dark; }}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{ background:{BG} !important; color:{INK} !important; }}
+[data-testid="stHeader"] {{ background:rgba(7,20,38,.96) !important; }}
+[data-testid="stSidebar"], [data-testid="stSidebar"] > div {{ background:#0B1B30 !important; color:{INK} !important; border-right:1px solid {BORDER}; }}
+.stMarkdown, .stMarkdown p, .stMarkdown li, .stMarkdown label, label, p, li {{ color:inherit; }}
 h1,h2,h3,h4,h5,h6,[data-testid="stSubheader"] {{ color:{NAVY} !important; }}
-[data-testid="stMetric"] {{ background:linear-gradient(145deg,#FFFFFF,#F1F6FB) !important; border:1px solid #DCE6F0; padding:15px 17px; border-radius:15px; box-shadow:0 5px 18px rgba(11,35,64,.055); animation:rise .45s ease both; }}
+[data-testid="stMetric"] {{ background:linear-gradient(145deg,{PANEL},{PANEL_ALT}) !important; border:1px solid {BORDER}; padding:15px 17px; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,.18); animation:rise .45s ease both; }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] * {{ color:{MUTED} !important; font-weight:650; }}
-[data-testid="stMetricValue"], [data-testid="stMetricValue"] * {{ color:{NAVY} !important; font-weight:750; }}
-[data-testid="stDataFrame"], [data-testid="stTable"] {{ background:white !important; }}
-input, textarea, [data-baseweb="select"] > div {{ background-color:#FFFFFF !important; color:{INK} !important; }}
+[data-testid="stMetricValue"], [data-testid="stMetricValue"] * {{ color:{CYAN} !important; font-weight:750; }}
+[data-testid="stDataFrame"], [data-testid="stTable"] {{ background:{PANEL} !important; }}
+input, textarea, [data-baseweb="select"] > div {{ background-color:{PANEL_ALT} !important; color:{INK} !important; border-color:{BORDER} !important; }}
 [data-testid="stWidgetLabel"] p {{ color:{INK} !important; }}
-.hero {{ position:relative; overflow:hidden; background:linear-gradient(115deg,#002D72 0%,#0057B8 58%,#1675C9 100%); color:white !important; padding:26px 29px; border-radius:21px; margin-bottom:14px; box-shadow:0 14px 35px rgba(11,35,64,.15); }}
-.hero:after {{ content:""; position:absolute; width:320px;height:320px;right:-65px;top:-170px;border:1px solid rgba(255,255,255,.2);border-radius:50%;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025); animation:orbit 24s linear infinite; pointer-events:none; }}
+[data-testid="stRadio"] label, [data-testid="stCheckbox"] label, [data-testid="stToggle"] label {{ color:{INK} !important; }}
+.hero {{ position:relative; overflow:hidden; background:linear-gradient(115deg,#06152B 0%,#0B3268 58%,#14549A 100%); color:#FFFFFF !important; padding:27px 30px; border:1px solid #234B78; border-radius:21px; margin-bottom:14px; box-shadow:0 18px 45px rgba(0,0,0,.24); }}
+.hero:after {{ content:""; position:absolute; width:320px;height:320px;right:-65px;top:-170px;border:1px solid rgba(140,205,255,.24);border-radius:50%;box-shadow:0 0 0 28px rgba(140,205,255,.045),0 0 0 58px rgba(140,205,255,.025); animation:orbit 24s linear infinite; pointer-events:none; }}
 .hero h1 {{ font-size:2.1rem; letter-spacing:-.04em; margin:0 0 6px; color:#FFFFFF !important; }}
-.hero p {{ color:#E2EDF8 !important; margin:0; max-width:900px; }}
-.hero .eyebrow {{ text-transform:uppercase; letter-spacing:.16em; font-size:.72rem; font-weight:750; color:#9DE1F5 !important; margin-bottom:8px; }}
-.pill {{ display:inline-block; padding:5px 10px; border-radius:999px; background:rgba(255,255,255,.12); color:#FFFFFF !important; font-size:.78rem; margin-top:13px; border:1px solid rgba(255,255,255,.18); }}
+.hero p {{ color:#D8E8FA !important; margin:0; max-width:900px; }}
+.hero .eyebrow {{ text-transform:uppercase; letter-spacing:.16em; font-size:.72rem; font-weight:750; color:{CYAN} !important; margin-bottom:8px; }}
+.pill {{ display:inline-block; padding:5px 10px; border-radius:999px; background:rgba(105,175,255,.13); color:#FFFFFF !important; font-size:.78rem; margin-top:13px; border:1px solid rgba(160,210,255,.25); }}
 .section-title {{ font-size:1.28rem; font-weight:800; color:{NAVY} !important; letter-spacing:-.02em; margin:.5rem 0 .25rem; }}
 .subtle {{ color:{MUTED} !important; font-size:.91rem; }}
-.winner {{ border:1px solid #A6D8D2; background:linear-gradient(135deg,#EFFAF8,#FFFFFF); border-radius:15px; padding:17px 19px; box-shadow:0 8px 24px rgba(21,154,145,.07); color:{INK} !important; }}
-.context-card {{ border-left:4px solid {CYAN}; background:#FFFFFF; border-radius:0 12px 12px 0; padding:12px 15px; margin:8px 0; box-shadow:0 3px 12px rgba(11,35,64,.035); color:{INK} !important; }}
+.winner {{ border:1px solid #267B79; background:linear-gradient(135deg,#123C48,{PANEL}); border-radius:15px; padding:17px 19px; box-shadow:0 8px 24px rgba(0,0,0,.16); color:{INK} !important; }}
+.context-card {{ border-left:4px solid {CYAN}; background:{PANEL}; border:1px solid {BORDER}; border-left:4px solid {CYAN}; border-radius:0 12px 12px 0; padding:12px 15px; margin:8px 0; box-shadow:0 3px 12px rgba(0,0,0,.12); color:{INK} !important; }}
 .small-note {{ color:{MUTED} !important; font-size:.83rem; }}
+[data-testid="stAlert"] {{ background:{PANEL} !important; border-color:{BORDER} !important; }}
 [data-testid="stAlert"] p {{ color:{INK} !important; }}
+hr {{ border-color:{BORDER} !important; }}
+.stButton button {{ background:{BLUE}; color:#06152B; border:0; font-weight:750; }}
 @keyframes rise {{ from {{opacity:0; transform:translateY(7px)}} to {{opacity:1;transform:translateY(0)}} }}
 @keyframes orbit {{ from {{transform:rotate(0deg)}} to {{transform:rotate(360deg)}} }}
 @media (prefers-reduced-motion: reduce) {{ *,*:before,*:after {{animation:none!important;transition:none!important}} }}
@@ -139,10 +147,10 @@ def validation_one_horizon(base, variable, horizon):
     return pd.DataFrame(rows), test
 
 def style_fig(fig, height=430, ytitle=''):
-    fig.update_layout(template='plotly_white', height=height, margin=dict(l=8,r=15,t=35,b=8), hovermode='x unified',
-      font=dict(family='Inter, Arial, sans-serif', color=INK), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#FFFFFF',
-      xaxis=dict(showgrid=False, linecolor='#DCE5EF'), yaxis=dict(title=ytitle, gridcolor='#E9EFF5', zerolinecolor='#DCE5EF'),
-      legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='left', x=0, bgcolor='rgba(255,255,255,.7)'))
+    fig.update_layout(template='plotly_dark', height=height, margin=dict(l=8,r=15,t=35,b=8), hovermode='x unified',
+      font=dict(family='Inter, Arial, sans-serif', color=INK), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor=PANEL,
+      xaxis=dict(showgrid=False, linecolor=BORDER, color=INK), yaxis=dict(title=ytitle, gridcolor=BORDER, zerolinecolor=BORDER, color=INK),
+      legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='left', x=0, bgcolor='rgba(16,34,58,.8)', font=dict(color=INK)))
     return fig
 
 def forecast_chart(model_frame, label, color):
@@ -184,7 +192,7 @@ except Exception as e:
 fa = ad[ad['Es_pronostico'] & ad['Pronostico_Soles'].notna()].copy()
 fm = mu[mu['Es_pronostico'] & mu['Pronostico_Soles'].notna()].copy()
 
-st.sidebar.markdown(f'<div style="background:linear-gradient(145deg,#002D72,#0057B8);padding:17px;border-radius:15px;color:#FFFFFF !important;margin-bottom:12px"><div style="font-size:.72rem;letter-spacing:.14em;color:#9DDBF1 !important;font-weight:750">INTELIGENCIA FINANCIERA</div><div style="font-size:1.45rem;font-weight:800;color:#FFFFFF !important">BCP Analytics</div><div style="font-size:.83rem;color:#D6E9F7 !important">Series de tiempo · SBS</div></div>', unsafe_allow_html=True)
+st.sidebar.markdown(f'<div style="background:linear-gradient(145deg,#06152B,#0B3268);padding:17px;border-radius:15px;color:#FFFFFF !important;margin-bottom:12px"><div style="font-size:.72rem;letter-spacing:.14em;color:#9DDBF1 !important;font-weight:750">INTELIGENCIA FINANCIERA</div><div style="font-size:1.45rem;font-weight:800;color:#FFFFFF !important">BCP Analytics</div><div style="font-size:.83rem;color:#D6E9F7 !important">Series de tiempo · SBS</div></div>', unsafe_allow_html=True)
 st.sidebar.caption('Base conectada al archivo del repositorio · presentación en soles')
 st.sidebar.markdown('### Filtros')
 variable = st.sidebar.selectbox('Variable histórica', VARIABLES, index=0)
@@ -229,11 +237,16 @@ if section == 'Resumen ejecutivo':
     with right:
         st.markdown('#### Señal de validación')
         if not all_metrics.empty:
-            last_h=int(all_metrics['Horizonte (meses)'].max())
-            mm=all_metrics[all_metrics['Horizonte (meses)']==last_h].sort_values('MAPE (%)')
-            win=mm.iloc[0]
-            st.markdown(f'<div class="winner"><div style="font-size:.74rem;color:{TEAL};font-weight:800;letter-spacing:.08em">MENOR MAPE · PRUEBA {last_h} MESES</div><div style="font-size:1.5rem;font-weight:800;color:{NAVY};margin:5px 0">Modelo {win["Modelo"].lower()}</div><div style="color:{MUTED};font-size:.9rem">MAPE: <b>{fmt_num(win["MAPE (%)"])}%</b><br>MAE: <b>{fmt_soles(win["MAE (S/)"])}</b></div></div>',unsafe_allow_html=True)
-            st.caption('El resultado corresponde a una prueba retrospectiva; no es garantía de desempeño futuro.')
+            # Usar exactamente el mismo criterio global que en "Comparación de modelos".
+            global_score = all_metrics.groupby('Modelo', as_index=False).agg(**{
+                'MAPE promedio (%)': ('MAPE (%)', 'mean'),
+                'MAE promedio (S/)': ('MAE (S/)', 'mean'),
+                'RMSE promedio (S/)': ('RMSE (S/)', 'mean'),
+                'Horizontes evaluados': ('Horizonte (meses)', 'nunique')
+            }).sort_values('MAPE promedio (%)').reset_index(drop=True)
+            win = global_score.iloc[0]
+            st.markdown(f'<div class="winner"><div style="font-size:.74rem;color:{TEAL};font-weight:800;letter-spacing:.08em">RECOMENDACIÓN GLOBAL · TODOS LOS HORIZONTES</div><div style="font-size:1.5rem;font-weight:800;color:{NAVY};margin:5px 0">Modelo {win["Modelo"].lower()}</div><div style="color:{MUTED};font-size:.9rem">MAPE promedio: <b>{fmt_num(win["MAPE promedio (%)"])}%</b><br>MAE promedio: <b>{fmt_soles(win["MAE promedio (S/)" ])}</b><br>Horizontes evaluados: <b>{int(win["Horizontes evaluados"])}</b></div></div>',unsafe_allow_html=True)
+            st.caption('Este es el ganador global por menor MAPE promedio, con el mismo peso para cada horizonte disponible. Los ganadores de 12, 24 y 36 meses pueden diferir; consulta la comparación para elegir según el plazo de decisión. La validación retrospectiva no garantiza el desempeño futuro.')
         else: st.info('No hay suficientes observaciones para las pruebas retrospectivas.')
         st.markdown('#### Puntos de contexto')
         for title,desc in [('2020 · COVID-19','Shock sanitario y económico.'),('2021 · Tipo de cambio','Volatilidad en el contexto electoral.'),('2023 · Clima y actividad','Protestas y eventos de El Niño.')]:

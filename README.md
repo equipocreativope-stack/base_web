@@ -1,16 +1,14 @@
-# BCP Analytics · Académico
+# BCP Analytics Académico
 
-Dashboard académico independiente de series de tiempo para créditos directos del BCP, con datos históricos de créditos, depósitos y patrimonio.
+Dashboard académico de series de tiempo para créditos directos del BCP. No es una aplicación oficial del BCP.
 
-## Funciones
-- Base `Base_BCP_Consolidada.xlsx` cargada automáticamente desde la misma carpeta que `app.py`.
-- Hojas requeridas: `BASE_BCP`, `ADITIVO` y `MULTIPLICATIVO`.
-- Pronósticos originales de las hojas ADITIVO y MULTIPLICATIVO presentados por separado.
-- Comparación de pronósticos originales y validación retrospectiva en horizontes de 12, 24 y 36 meses.
-- Selección de ganador por horizonte y ganador global por menor MAPE promedio entre horizontes, con MAE y RMSE como medidas complementarias.
-- Valores mostrados en soles (S/); el libro original está en miles de soles y se multiplica por 1.000 únicamente en la visualización.
-- Tema claro azul y blanco, con acentos dorados y textos de alto contraste.
-- Cronología contextual de eventos, sin atribuir causalidad sin análisis estadístico.
+## Incluye
+- Base histórica de créditos directos, depósitos totales y patrimonio.
+- Modelos aditivo y multiplicativo con sus pronósticos originales 2026–2028.
+- Validación retrospectiva de 12, 24 y 36 meses con MAE, RMSE y MAPE.
+- Regla única para ganador global: menor MAPE promedio entre los horizontes disponibles, con igual peso por horizonte.
+- Tema oscuro con contraste claro, gráficos Plotly oscuros y animación opcional de la evolución histórica.
+- Contexto histórico enlazado a fuentes públicas; los acontecimientos no se interpretan como causas demostradas.
 
 ## Ejecutar localmente
 ```bash
@@ -18,8 +16,16 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Despliegue
-Sube `app.py`, `requirements.txt`, `README.md`, `.streamlit/config.toml` y `Base_BCP_Consolidada.xlsx` a la raíz del repositorio (la carpeta `.streamlit` debe contener `config.toml`). Configura Streamlit Community Cloud para ejecutar `app.py`.
+## Estructura requerida en GitHub
+```text
+app.py
+Base_BCP_Consolidada.xlsx
+requirements.txt
+README.md
+.streamlit/config.toml
+```
 
-## Nota académica
-Este proyecto es independiente y no es una web ni una herramienta oficial del Banco de Crédito del Perú. Los resultados retrospectivos son evidencia comparativa, no garantía de precisión futura. El ganador global usa el menor MAPE promedio con el mismo peso para cada horizonte disponible; las métricas individuales y la estabilidad también deben considerarse.
+La base debe conservar las hojas `BASE_BCP`, `ADITIVO` y `MULTIPLICATIVO`. Los valores originales del libro se expresan en miles de soles; la interfaz los convierte a soles multiplicando por 1.000 sin modificar el archivo.
+
+## Nota metodológica
+Las pruebas de 12, 24 y 36 meses utilizan ventanas de entrenamiento distintas, dado que cada prueba reserva un tramo final de longitud diferente. El ganador global es un resumen comparativo académico y no garantiza mejor desempeño futuro. Se recomienda complementar esta evaluación con validación de origen rodante antes de usar los pronósticos para decisiones reales.
