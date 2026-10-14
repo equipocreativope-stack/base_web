@@ -41,13 +41,21 @@ def load_workbook(file_bytes):
 
 st.sidebar.title('BCP Analytics')
 st.sidebar.caption('Panel de análisis de series de tiempo')
-upload = st.sidebar.file_uploader('Cargar libro Excel', type=['xlsx'], help='Debe contener las hojas BASE_BCP, ADITIVO y MULTIPLICATIVO.')
-if upload:
-    source_bytes = upload.getvalue()
-    source_name = upload.name
-else:
-    source_bytes = DEFAULT_FILE.read_bytes() if DEFAULT_FILE.exists() else None
+
+# Cargar automáticamente la base incluida en el repositorio
+from pathlib import Path
+
+DEFAULT_FILE = Path(__file__).parent / "Base_BCP_Consolidada.xlsx"
+
+st.sidebar.success("Base de datos del BCP cargada automáticamente")
+
+if DEFAULT_FILE.exists():
+    source_bytes = DEFAULT_FILE.read_bytes()
     source_name = DEFAULT_FILE.name
+else:
+    source_bytes = None
+    source_name = None
+
 
 if source_bytes is None:
     st.error('Carga el archivo Excel para comenzar.')
